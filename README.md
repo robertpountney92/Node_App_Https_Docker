@@ -1,1 +1,1 @@
-Minimal Node.js application for intro to Docker tutorial: https://www.digitalocean.com/community/tutorials/how-to-build-a-node-js-application-with-docker
+I have secured an application using letsencrypt and deplyed to and AWS instance using Docker-compose. This application is now secured for the domain robwebsite.tk. This domain is proxied by an Nginx webserver.
