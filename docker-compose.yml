@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  nodejs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nodejs
+    container_name: nodejs
+    restart: unless-stopped
+    volumes:
+      - web-root:/home/node/app/views
+      # - nginx-conf:/home/node/app/nginx-configuration
+    networks:
+      - app-network
+      
+  webserver:
+    image: nginx:mainline-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - web-root:/var/www/html
+      - /etc/nginx-dir:/etc/nginx/conf.d
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - nodejs
+    networks:
+      - app-network
+    
+
+  
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    depends_on:
+      - webserver
+    command: certonly --webroot --webroot-path=/var/www/html --email robertpountney71@gmail.com --agree-tos --no-eff-email --force-renewal -d robwebsite.tk  -d www.robwebsite.tk 
+
+volumes:
+  certbot-etc:
+  certbot-var:
+  nginx-conf:
+  web-root:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     device: /home/ec2-user/node_project/views/
+  #     o: bind
+
+networks:
+  app-network:
+    driver: bridge  
